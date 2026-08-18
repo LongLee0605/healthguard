@@ -1,0 +1,26 @@
+{
+  "name": "healthguard-workspace",
+  "private": true,
+  "scripts": {
+    "hg": "node ./scripts/cli.mjs",
+    "help": "node ./scripts/cli.mjs help",
+    "doctor": "node ./scripts/cli.mjs doctor",
+    "status": "node ./scripts/cli.mjs status",
+    "env": "node ./scripts/cli.mjs env",
+    "urls": "node ./scripts/cli.mjs urls",
+    "setup:envs": "powershell -ExecutionPolicy Bypass -File ./scripts/setup-envs.ps1",
+    "setup:ai": "powershell -ExecutionPolicy Bypass -File ./scripts/setup-ai.ps1",
+    "dev:backend": "powershell -ExecutionPolicy Bypass -File ./scripts/start-backend.ps1",
+    "dev:frontend": "powershell -ExecutionPolicy Bypass -File ./scripts/start-frontend.ps1",
+    "dev:desktop": "powershell -ExecutionPolicy Bypass -File ./scripts/start-desktop.ps1",
+    "dev:mobile": "powershell -ExecutionPolicy Bypass -File ./scripts/start-mobile.ps1",
+    "dev:all": "powershell -ExecutionPolicy Bypass -File ./scripts/start-all.ps1",
+    "dev:ollama": "powershell -ExecutionPolicy Bypass -File ./scripts/start-ollama.ps1",
+    "train:ai": "powershell -ExecutionPolicy Bypass -File ./scripts/train-ai.ps1",
+    "brand:assets": "powershell -ExecutionPolicy Bypass -File ./scripts/generate-brand-assets.ps1",
+    "prisma:generate": "cd backend && npx --no prisma generate"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

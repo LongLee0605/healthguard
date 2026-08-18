@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: healthguard
+      POSTGRES_PASSWORD: healthguard
+      POSTGRES_DB: healthguard
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U healthguard']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ['CMD-SHELL', 'ollama list || exit 0']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '3001:3001'
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://healthguard:healthguard@postgres:5432/healthguard
+      CORS_ORIGIN: http://localhost:3000,http://localhost:8081
+      PORT: 3001
+      AI_PROVIDER: ollama
+      OLLAMA_BASE_URL: http://ollama:11434/v1
+      OLLAMA_MODEL: qwen2.5:3b-instruct
+      OLLAMA_EMBED_MODEL: nomic-embed-text
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+
+volumes:
+  pgdata:
+  ollama_data:

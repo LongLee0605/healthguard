@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 160" fill="none">
+  <defs>
+    <linearGradient id="hg-bg" x1="64" y1="64" x2="448" y2="448" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+    <linearGradient id="hg-shine" x1="256" y1="96" x2="256" y2="416" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="hg-title" x1="172" y1="48" x2="700" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0f766e"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(8 8) scale(0.28125)">
+    <rect width="512" height="512" rx="112" fill="url(#hg-bg)"/>
+    <rect width="512" height="512" rx="112" fill="url(#hg-shine)"/>
+    <path d="M256 108c-52 0-96 28-120 72-8 14-12 30-12 46v44c0 62 48 118 108 142 8 3 16 3 24 0 60-24 108-80 108-142v-44c0-16-4-32-12-46-24-44-68-72-120-72z" fill="#ffffff" fill-opacity="0.12"/>
+    <path d="M256 124c-44 0-82 24-102 62-6 11-9 24-9 36v38c0 52 40 100 92 120 6 2 13 2 19 0 52-20 92-68 92-120v-38c0-12-3-25-9-36-20-38-58-62-102-62z" stroke="#ffffff" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M168 268h48l20-44 24 88 20-44h44" stroke="#ffffff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M300 196h28v28h-28zM314 182h28v56h-28z" fill="#ffffff"/>
+  </g>
+  <text x="172" y="78" font-family="Segoe UI, system-ui, sans-serif" font-size="52" font-weight="700" fill="url(#hg-title)">HealthGuard</text>
+  <text x="174" y="112" font-family="Segoe UI, system-ui, sans-serif" font-size="22" font-weight="500" fill="#0f766e" fill-opacity="0.75">Sức khỏe thông minh</text>
+</svg>

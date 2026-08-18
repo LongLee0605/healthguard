@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.next/
+.expo/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+Thumbs.db
+
+# Legacy monorepo (removed)
+apps/
+packages/
