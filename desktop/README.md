@@ -1,6 +1,6 @@
 # HealthGuard Desktop
 
-Electron desktop shell cho HealthGuard, dùng lại giao diện `frontend/` và cùng backend API với web/mobile.
+Electron desktop shell cho HealthGuard, dùng lại giao diện `frontend/` và cùng backend API với web.
 
 ## Ý tưởng triển khai
 
@@ -59,11 +59,10 @@ Nếu muốn app desktop mở bản web production, trỏ `FRONTEND_URL` tới U
 
 ## Dùng chung API
 
-- Frontend web và desktop cùng dùng `frontend/src/store/api/baseApi.ts`
-- Mobile dùng `mobile/lib/api.ts`
-- Cả 3 client đều phải trỏ về cùng backend base: `http://localhost:3001/api` khi chạy local
+- Web và app PC cùng dùng `frontend/src/store/api/baseApi.ts`
+- Cả hai đều gọi backend tại `http://localhost:3001/api` khi chạy local
 
 ## Ghi chú
 
-- Nếu frontend chưa chạy, Electron sẽ báo lỗi kết nối tới `FRONTEND_URL`
+- Nếu web chưa chạy, app hiện trang hướng dẫn thử lại thay vì cửa sổ trống
 - Tray chỉ được bật khi có file `assets/icon.png`

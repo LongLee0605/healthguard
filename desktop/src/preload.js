@@ -1,8 +1,9 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { app, contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('healthguard', {
   platform: process.platform,
   isElectron: true,
+  version: app.getVersion(),
   showNotification: ({ title, body, alertId }) => {
     ipcRenderer.send('show-notification', { title, body, alertId });
   },

@@ -2,7 +2,7 @@
 
 
 
-## Tổng quan (3 client + 1 API + AI local)
+## Tổng quan (Web + app PC + API + AI local)
 
 
 
@@ -16,10 +16,6 @@ healthguard/
 
 ├── desktop/     Electron shell
 
-├── mobile/      Expo React Native
-
-├── ml/          Fine-tune pipeline (LoRA → Ollama)
-
 └── docs/        Tài liệu đồ án
 
 ```
@@ -32,8 +28,6 @@ flowchart LR
 
   Web[frontend Web PC]
 
-  Mobile[mobile Expo]
-
   Desktop[desktop Electron]
 
   BE[backend API]
@@ -43,8 +37,6 @@ flowchart LR
   Ollama[Ollama LLM local]
 
   Web --> BE
-
-  Mobile --> BE
 
   Desktop --> BE
 
@@ -142,22 +134,6 @@ Frontend không gọi AI trực tiếp — mọi request qua `/api/ai/*`.
 
 
 
-## Mobile
-
-
-
-```
-
-mobile/
-
-├── app/                 Expo Router tabs
-
-├── lib/api.ts           fetch + JWT header
-
-```
-
-
-
 ## Kết nối giữa các app
 
 
@@ -168,29 +144,11 @@ mobile/
 
 | Web | `NEXT_PUBLIC_API_URL` | `http://localhost:3001/api` |
 
-| Mobile | `EXPO_PUBLIC_API_URL` | `http://localhost:3001/api` |
+| App PC | `FRONTEND_URL` | `http://localhost:3000` |
 
 | Backend | `OLLAMA_BASE_URL` | `http://localhost:11434/v1` |
 
 | Backend | `CORS_ORIGIN` | `http://localhost:3000,http://localhost:8081` |
-
-
-
-## ML / Fine-tune (tương lai production)
-
-
-
-```
-
-ml/
-
-├── export_dataset.py    PostgreSQL → JSONL
-
-├── train_lora.py        LoRA fine-tune
-
-└── Modelfile            Import vào Ollama
-
-```
 
 
 
@@ -208,7 +166,7 @@ ml/
 
 | Frontend | Vercel | |
 
-| Mobile | EAS / Expo | |
+| App PC | Electron trên Windows | Mở `FRONTEND_URL` |
 
 
 
@@ -224,5 +182,5 @@ Chi tiết: [DEPLOY.md](./DEPLOY.md)
 
 - [frontend/AGENTS.md](../frontend/AGENTS.md)
 
-- [mobile/AGENTS.md](../mobile/AGENTS.md)
+- [desktop/AGENTS.md](../desktop/AGENTS.md)
 

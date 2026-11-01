@@ -15,7 +15,7 @@ const FEATURES = [
   { icon: '💊', title: 'Nhắc uống thuốc', desc: 'Quản lý lịch uống thuốc, không bỏ lỡ liều nào với thông báo thông minh', gradient: 'from-amber-500/20 to-orange-500/20' },
   { icon: '🔔', title: 'Cảnh báo thông minh', desc: 'Phát hiện chỉ số bất thường tự động — huyết áp cao, đường huyết vượt ngưỡng', gradient: 'from-red-500/20 to-rose-500/20' },
   { icon: '🔥', title: 'Streak & Thành tựu', desc: 'Gamification khuyến khích theo dõi sức khỏe mỗi ngày — điểm sức khỏe 0-100', gradient: 'from-orange-500/20 to-yellow-500/20' },
-  { icon: '📱', title: 'Đa nền tảng', desc: 'Web + Desktop (Electron) + Mobile (Expo) đồng bộ real-time qua REST API', gradient: 'from-blue-500/20 to-cyan-500/20' },
+  { icon: '🖥️', title: 'Web và app PC', desc: 'Dùng trên trình duyệt hoặc cửa sổ Windows, có thông báo ở khay hệ thống và xuất báo cáo PDF', gradient: 'from-blue-500/20 to-cyan-500/20' },
 ];
 
 const STEPS = [
@@ -24,7 +24,7 @@ const STEPS = [
   { step: '03', title: 'Theo dõi & cảnh báo', desc: 'Dashboard, báo cáo PDF, cảnh báo tự động khi chỉ số bất thường', icon: '📊' },
 ];
 
-const TECH = ['Next.js 15', 'NestJS 11', 'Prisma 6', 'PostgreSQL', 'Ollama AI', 'Expo', 'Electron', 'Tailwind 4', 'Redux Toolkit'];
+const TECH = ['Next.js 15', 'NestJS 11', 'Prisma 6', 'PostgreSQL', 'Ollama AI', 'Electron', 'Tailwind 4', 'Redux Toolkit'];
 
 const REVIEWS = [
   { name: 'Demo User', role: 'Người dùng thử', text: 'Giao diện đẹp, AI trả lời nhanh và có ngữ cảnh. Phù hợp demo đồ án!', avatar: '👨‍💻' },
@@ -75,7 +75,7 @@ export default function LandingPage() {
           <div>
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-teal-500/20 border border-teal-400/40 rounded-full text-teal-200 text-sm font-medium mb-5">
               <span className="w-2 h-2 bg-teal-400 rounded-full animate-pulse" />
-              Đồ án tốt nghiệp CNTT — AI local tích hợp
+              AI chạy trên máy bạn — Web và ứng dụng Windows
             </span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-5">
               Quản lý sức khỏe
@@ -85,7 +85,7 @@ export default function LandingPage() {
               </span>
             </h1>
             <p className="text-base md:text-lg text-slate-300 max-w-lg mb-6 leading-relaxed">
-              Theo dõi triệu chứng, chỉ số sinh hiệu, trò chuyện với AI local và nhận cảnh báo sớm — Web, Desktop và Mobile trong một nền tảng.
+              Theo dõi triệu chứng, chỉ số sinh hiệu, trò chuyện với AI trên máy bạn và nhận cảnh báo sớm — trên trình duyệt hoặc ứng dụng Windows.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 mb-5">
               <Link href="/login" className="px-6 py-3.5 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-xl font-bold transition-all shadow-lg shadow-teal-500/20 text-center">
@@ -126,7 +126,7 @@ export default function LandingPage() {
             { value: 6, label: 'Module chính', suffix: '' },
             { value: 100, label: 'Điểm sức khỏe', suffix: '' },
             { value: 24, label: 'Theo dõi', suffix: '/7' },
-            { value: 4, label: 'Nền tảng', suffix: '' },
+            { value: 2, label: 'Web và app PC', suffix: '' },
           ].map((s) => (
             <div key={s.label} className="text-center">
               <p className="text-3xl md:text-4xl font-bold text-teal-400">
@@ -210,8 +210,8 @@ export default function LandingPage() {
       <section className="py-14 px-6">
         <div className="max-w-3xl mx-auto text-center bg-gradient-to-br from-teal-900/50 via-slate-900 to-emerald-900/40 border border-teal-500/30 rounded-2xl p-8 md:p-10 relative overflow-hidden">
           <div className="absolute inset-0 animate-shimmer pointer-events-none" />
-          <h2 className="text-2xl md:text-3xl font-bold mb-3 relative">Sẵn sàng trình bày đồ án?</h2>
-          <p className="text-slate-300 mb-6 relative text-sm">Đăng nhập demo và khám phá toàn bộ tính năng HealthGuard</p>
+          <h2 className="text-2xl md:text-3xl font-bold mb-3 relative">Bắt đầu theo dõi sức khỏe</h2>
+          <p className="text-slate-300 mb-6 relative text-sm">Đăng nhập tài khoản demo hoặc tạo tài khoản mới. Trên Windows, mở thêm app PC để nhận thông báo ở khay hệ thống.</p>
           <Link href="/login" className="relative inline-block px-8 py-3.5 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-400 hover:to-emerald-400 rounded-xl font-bold transition-all shadow-lg shadow-teal-500/20">
             Bắt đầu Demo →
           </Link>
@@ -219,7 +219,7 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-slate-700/80 py-6 px-6 text-center text-xs text-slate-400">
-        <p>HealthGuard © 2026 — Đồ án tốt nghiệp CNTT</p>
+        <p>HealthGuard © 2026 — Web và ứng dụng Windows</p>
         <p className="mt-1.5 italic text-slate-500 max-w-2xl mx-auto">{MEDICAL_DISCLAIMER}</p>
       </footer>
     </div>

@@ -329,6 +329,18 @@ body {
   background: linear-gradient(180deg, var(--primary-light), var(--primary));
 }
 
+.nav-label {
+  @apply px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider;
+  color: var(--text-muted);
+}
+
+.kbd {
+  @apply text-[10px] font-semibold px-1.5 py-0.5 rounded border shrink-0;
+  color: var(--text-muted);
+  border-color: var(--border-subtle);
+  background: var(--bg);
+}
+
 .glass {
   @apply bg-white/10 backdrop-blur-lg border border-white/20;
 }

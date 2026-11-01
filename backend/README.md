@@ -124,10 +124,6 @@ Services:
 
 
 
-Fine-tune pipeline: xem [`../ml/README.md`](../ml/README.md)
-
-
-
 ## Deploy
 
 

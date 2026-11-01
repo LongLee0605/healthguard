@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import BrandMark from '@/components/BrandMark';
+import { isDesktopApp } from '@/lib/desktop';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -16,7 +17,7 @@ export default function InstallPwaBanner() {
   const [dismissed, setDismissed] = useState(true);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined' || isDesktopApp()) return;
     setDismissed(localStorage.getItem(DISMISS_KEY) === 'true');
 
     const handler = (e: Event) => {

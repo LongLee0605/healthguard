@@ -20,7 +20,6 @@ const brandDir = path.join(root, 'brand');
 const iconSvg = fs.readFileSync(path.join(brandDir, 'icon.svg'));
 const publicDir = path.join(root, 'frontend', 'public');
 const desktopDir = path.join(root, 'desktop', 'assets');
-const mobileDir = path.join(root, 'mobile', 'assets');
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -76,7 +75,6 @@ async function pngBuffer(size) {
 async function main() {
   ensureDir(publicDir);
   ensureDir(desktopDir);
-  ensureDir(mobileDir);
 
   for (const name of ['icon.svg', 'logo.svg', 'logo-dark.svg']) {
     fs.copyFileSync(path.join(brandDir, name), path.join(publicDir, name));
@@ -89,11 +87,6 @@ async function main() {
   await writePng(path.join(publicDir, 'apple-touch-icon.png'), 180);
 
   await writePng(path.join(desktopDir, 'icon.png'), 256);
-  await writePng(path.join(mobileDir, 'icon.png'), 1024);
-  await writePng(path.join(mobileDir, 'adaptive-icon.png'), 1024);
-  await writePng(path.join(mobileDir, 'splash-icon.png'), 512);
-  await writePng(path.join(mobileDir, 'notification-icon.png'), 96);
-  await writePng(path.join(mobileDir, 'favicon.png'), 48);
 
   const ico = pngToIco(await Promise.all([16, 32, 48, 256].map(pngBuffer)));
   const icoPublic = path.join(publicDir, 'favicon.ico');

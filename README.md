@@ -38,8 +38,7 @@
 | Nền tảng | Vai trò |
 |----------|---------|
 | **Web** (Next.js) | Dashboard chính — trình duyệt / PWA |
-| **Desktop** (Electron) | App Windows — thông báo native |
-| **Mobile** (Expo) | App điện thoại — đồng bộ cùng tài khoản |
+| **Desktop** (Electron) | App Windows — thông báo ở khay hệ thống, xuất PDF |
 | **Backend** (NestJS) | API + AI + cron nhắc thuốc |
 | **Ollama + PostgreSQL** | LLM local + lưu trữ dữ liệu |
 
@@ -226,7 +225,6 @@ flowchart TB
   subgraph clients [Client Apps]
     WEB["Web Next.js :3000"]
     DESK["Desktop Electron"]
-    MOB["Mobile Expo"]
   end
 
   subgraph server ["Backend :3001"]
@@ -242,7 +240,6 @@ flowchart TB
 
   WEB --> API
   DESK --> WEB
-  MOB --> API
   API --> PG
   AI --> OLL
   AI --> PG
@@ -254,8 +251,6 @@ healthguard/
 ├── backend/      # API NestJS + Prisma + AI + clinical triage
 ├── frontend/     # Web dashboard Next.js 15
 ├── desktop/      # Electron shell (Windows)
-├── mobile/       # Expo React Native
-├── ml/           # Fine-tune pipeline (tùy chọn)
 ├── scripts/      # CLI & PowerShell helpers (Windows)
 ├── brand/        # Logo và icon
 └── docs/         # Tài liệu kỹ thuật
@@ -286,9 +281,8 @@ Tất cả lệnh từ **thư mục gốc**:
 | `npm run dev:backend` | Start Postgres + Ollama + migrate + API |
 | `npm run dev:frontend` | Start web dashboard |
 | `npm run dev:ollama` | Chỉ start Ollama + pull model nếu thiếu |
-| `npm run dev:desktop` | Electron app |
-| `npm run dev:mobile` | Expo app |
-| `npm run dev:all` | Mở 4 terminal cùng lúc |
+| `npm run dev:desktop` | Electron app (cần web đang chạy) |
+| `npm run dev:all` | Mở backend, web và app PC |
 | `npm run env` | In `.env` (đã che secret) |
 | `npm run hg` / `help` | Menu CLI đầy đủ |
 
@@ -364,11 +358,9 @@ Backend + frontend chạy được. Script PowerShell trong `scripts/` tối ưu
 </details>
 
 <details>
-<summary><strong>Test trên điện thoại thật?</strong></summary>
+<summary><strong>Mở app PC thế nào?</strong></summary>
 
-1. Máy tính và điện thoại cùng Wi-Fi.
-2. Sửa `mobile/.env`: `EXPO_PUBLIC_API_URL=http://<IP-máy-tính>:3001/api`
-3. `npm run dev:mobile` → quét QR bằng Expo Go.
+Giữ web đang chạy ở cổng 3000, rồi ở terminal khác chạy `npm run dev:desktop`. Đóng cửa sổ sẽ thu app vào khay hệ thống để vẫn nhận cảnh báo. Chọn **Thoát** trên menu khay để đóng hẳn.
 </details>
 
 <details>
@@ -388,7 +380,6 @@ PostgreSQL trong Docker volume. Xuất backup: **Hồ sơ → Tải JSON** hoặ
 | [docs/DEPLOY.md](docs/DEPLOY.md) | Deploy production |
 | [docs/qa-checklist.md](docs/qa-checklist.md) | QA và kịch bản demo 5 phút |
 | [backend/README.md](backend/README.md) | API và biến môi trường |
-| [ml/README.md](ml/README.md) | Fine-tune model (tùy chọn) |
 
 ---
 

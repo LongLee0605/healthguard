@@ -30,6 +30,7 @@ import PageHeader from '@/components/PageHeader';
 import LoadingSkeleton from '@/components/LoadingSkeleton';
 import EmptyState from '@/components/EmptyState';
 import QueryError from '@/components/QueryError';
+import TodayMedications from '@/components/TodayMedications';
 
 const VitalChart = dynamic(() => import('@/components/VitalChart'), {
   ssr: false,
@@ -93,6 +94,8 @@ export default function DashboardPage() {
           <StatCard label="Cảnh báo" value={stats?.unreadAlerts ?? 0} icon="" color="text-red-700 dark:text-red-400" bg="bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400" IconComponent={ClipboardList} />
         </div>
       </div>
+
+      <TodayMedications />
 
       <div className="card section bg-teal-50/60 dark:bg-teal-950/20 border-teal-200 dark:border-teal-800">
         <div className="flex items-start gap-3">

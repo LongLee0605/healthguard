@@ -20,6 +20,68 @@ const isDev = !app.isPackaged;
 let mainWindow = null;
 let tray = null;
 let unreadCount = 0;
+let isQuitting = false;
+let trayHintShown = false;
+
+const PAGES = [
+  ['Tổng quan', '/dashboard'],
+  ['AI Chat', '/dashboard/chat'],
+  ['Chỉ số', '/dashboard/vitals'],
+  ['Triệu chứng', '/dashboard/symptoms'],
+  ['Phân tích AI', '/dashboard/ai'],
+  ['Thuốc', '/dashboard/medications'],
+  ['Báo cáo', '/dashboard/reports'],
+];
+
+function boundsFile() {
+  return path.join(app.getPath('userData'), 'window-bounds.json');
+}
+
+function loadWindowBounds() {
+  try {
+    const saved = JSON.parse(fs.readFileSync(boundsFile(), 'utf8'));
+    if (saved && saved.width >= 1100 && saved.height >= 700) return saved;
+  } catch {
+    /* first launch */
+  }
+  return { width: 1360, height: 860 };
+}
+
+function saveWindowBounds() {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  fs.writeFileSync(boundsFile(), JSON.stringify(mainWindow.getBounds()));
+}
+
+function openAppPage(route) {
+  if (!mainWindow) {
+    createMainWindow();
+    return;
+  }
+  const target = new URL(route, frontendUrl.endsWith('/') ? frontendUrl : `${frontendUrl}/`).toString();
+  mainWindow.show();
+  mainWindow.focus();
+  mainWindow.loadURL(target);
+}
+
+function showOfflinePage(detail) {
+  if (!mainWindow) return;
+  const html = `<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><title>HealthGuard</title>
+<style>
+  body { margin:0; min-height:100vh; display:grid; place-items:center; font-family:Segoe UI,sans-serif; background:#0f172a; color:#e2e8f0; }
+  main { max-width:440px; padding:32px; }
+  h1 { margin:0 0 8px; font-size:24px; }
+  p { color:#94a3b8; line-height:1.5; }
+  a { display:inline-block; margin-top:16px; background:#0f766e; color:white; text-decoration:none; padding:10px 16px; border-radius:10px; font-weight:600; }
+</style></head>
+<body><main>
+  <h1>Chưa mở được giao diện</h1>
+  <p>App PC cần web đang chạy tại ${frontendUrl}. Hãy giữ terminal <strong>npm run dev:frontend</strong> rồi thử lại.</p>
+  <p>${detail}</p>
+  <a href="${frontendUrl}/login">Thử lại</a>
+</main></body></html>`;
+  mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`);
+}
 
 function updateTrayTooltip() {
   if (!tray) return;
@@ -99,13 +161,14 @@ function resolveAppIcon() {
 
 function createMainWindow() {
   const appIcon = resolveAppIcon();
+  const bounds = loadWindowBounds();
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
+    ...bounds,
     minWidth: 1100,
     minHeight: 700,
     autoHideMenuBar: false,
-    title: 'HealthGuard Desktop',
+    title: 'HealthGuard',
+    backgroundColor: '#f1f5f9',
     ...(appIcon ? { icon: appIcon } : {}),
     show: true,
     webPreferences: {
@@ -126,19 +189,10 @@ function createMainWindow() {
     if (mainWindow && !mainWindow.isVisible()) mainWindow.show();
   });
 
-  mainWindow.webContents.on('did-fail-load', async (_event, errorCode, errorDescription, validatedURL) => {
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, _errorDescription, validatedURL) => {
+    if (!validatedURL || validatedURL.startsWith('data:') || errorCode === -3) return;
     if (mainWindow && !mainWindow.isVisible()) mainWindow.show();
-    await dialog.showMessageBox(mainWindow, {
-      type: 'error',
-      title: 'Không tải được giao diện',
-      message: 'HealthGuard Desktop không thể tải trang web.',
-      detail: [
-        `URL: ${validatedURL}`,
-        `Lỗi: ${errorDescription} (${errorCode})`,
-        '',
-        'Hãy chạy frontend trước: cd frontend && npm run dev',
-      ].join('\n'),
-    });
+    showOfflinePage(`${errorCode}`);
   });
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -156,18 +210,26 @@ function createMainWindow() {
   });
 
   const startUrl = frontendUrl.endsWith('/') ? `${frontendUrl}login` : `${frontendUrl}/login`;
-  mainWindow.loadURL(startUrl).catch(async (error) => {
-    await dialog.showMessageBox({
-      type: 'error',
-      title: 'Cannot open frontend',
-      message: 'HealthGuard Desktop could not connect to the frontend UI.',
-      detail: [
-        `Expected frontend URL: ${frontendUrl}`,
-        'Start the Next.js app in the frontend folder or point FRONTEND_URL to a deployed web app.',
-        '',
-        String(error),
-      ].join('\n'),
-    });
+  mainWindow.loadURL(startUrl).catch((error) => {
+    showOfflinePage(String(error));
+  });
+
+  mainWindow.on('resize', saveWindowBounds);
+  mainWindow.on('move', saveWindowBounds);
+
+  mainWindow.on('close', (event) => {
+    if (isQuitting || !tray) return;
+    event.preventDefault();
+    mainWindow.hide();
+    if (!trayHintShown && Notification.isSupported()) {
+      trayHintShown = true;
+      const notice = new Notification({
+        title: 'HealthGuard vẫn đang chạy',
+        body: 'Cửa sổ đã thu vào khay hệ thống để tiếp tục nhận cảnh báo. Chọn Thoát trên menu khay để đóng hẳn.',
+        icon: resolveAppIcon(),
+      });
+      notice.show();
+    }
   });
 
   mainWindow.on('closed', () => {
@@ -180,33 +242,43 @@ function createAppMenu() {
     {
       label: 'HealthGuard',
       submenu: [
+        ...PAGES.map(([label, route]) => ({
+          label,
+          click: () => openAppPage(route),
+        })),
+        { type: 'separator' },
         {
-          label: 'Open Web Dashboard',
-          click: () => mainWindow && mainWindow.loadURL(frontendUrl),
-        },
-        {
-          label: 'Open API Docs',
+          label: 'Tài liệu API',
           click: () => shell.openExternal('http://localhost:3001/api/docs'),
         },
         { type: 'separator' },
         {
-          label: 'Quit',
-          click: () => app.quit(),
+          label: 'Thoát',
+          click: () => {
+            isQuitting = true;
+            app.quit();
+          },
         },
       ],
     },
     {
-      label: 'View',
+      label: 'Xem',
       submenu: [
-        { role: 'reload' },
-        { role: 'forceReload' },
-        { role: 'togglefullscreen' },
-        ...(isDev ? [{ role: 'toggleDevTools' }] : []),
+        { label: 'Tải lại', role: 'reload' },
+        { label: 'Tải lại bỏ cache', role: 'forceReload' },
+        { label: 'Toàn màn hình', role: 'togglefullscreen' },
+        ...(isDev ? [{ label: 'Công cụ phát triển', role: 'toggleDevTools' }] : []),
       ],
     },
     {
-      label: 'Window',
-      submenu: [{ role: 'minimize' }, { role: 'close' }],
+      label: 'Cửa sổ',
+      submenu: [
+        { label: 'Thu nhỏ', role: 'minimize' },
+        {
+          label: 'Thu vào khay',
+          click: () => mainWindow && mainWindow.hide(),
+        },
+      ],
     },
   ];
 
@@ -220,11 +292,11 @@ function createTray() {
   }
 
   tray = new Tray(trayIconPath);
-  tray.setToolTip('HealthGuard Desktop');
+  tray.setToolTip('HealthGuard');
   tray.setContextMenu(
     Menu.buildFromTemplate([
       {
-        label: 'Show App',
+        label: 'Hiện HealthGuard',
         click: () => {
           if (!mainWindow) {
             createMainWindow();
@@ -235,13 +307,20 @@ function createTray() {
         },
       },
       {
-        label: 'Open API Docs',
-        click: () => shell.openExternal('http://localhost:3001/api/docs'),
+        label: 'Tổng quan',
+        click: () => openAppPage('/dashboard'),
+      },
+      {
+        label: 'Cảnh báo',
+        click: () => openAppPage('/dashboard/alerts'),
       },
       { type: 'separator' },
       {
-        label: 'Quit',
-        click: () => app.quit(),
+        label: 'Thoát',
+        click: () => {
+          isQuitting = true;
+          app.quit();
+        },
       },
     ]),
   );
@@ -253,6 +332,10 @@ function createTray() {
     }
   });
 }
+
+app.on('before-quit', () => {
+  isQuitting = true;
+});
 
 app.whenReady().then(() => {
   createAppMenu();

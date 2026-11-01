@@ -101,8 +101,7 @@ function Sync-EnvFile {
 $pairs = @(
   @{ Source = (Join-Path $root "backend\.env.example"); Destination = (Join-Path $root "backend\.env"); Remove = @('GEMINI_', 'OPENAI_') },
   @{ Source = (Join-Path $root "frontend\.env.example"); Destination = (Join-Path $root "frontend\.env.local"); Remove = @() },
-  @{ Source = (Join-Path $root "desktop\.env.example"); Destination = (Join-Path $root "desktop\.env"); Remove = @() },
-  @{ Source = (Join-Path $root "mobile\.env.example"); Destination = (Join-Path $root "mobile\.env"); Remove = @() }
+  @{ Source = (Join-Path $root "desktop\.env.example"); Destination = (Join-Path $root "desktop\.env"); Remove = @() }
 )
 
 Write-HgBanner "setup:envs" "Đồng bộ .env từ file mẫu (không ghi đè giá trị đã có)"

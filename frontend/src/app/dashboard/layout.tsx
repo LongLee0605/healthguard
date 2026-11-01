@@ -3,21 +3,7 @@
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {
-  LayoutDashboard,
-  MessageCircle,
-  HeartPulse,
-  FileText,
-  Bot,
-  Pill,
-  Bell,
-  FileBarChart,
-  History,
-  User,
-  Sun,
-  Moon,
-  LogOut,
-} from 'lucide-react';
+import { Monitor, Moon, Search, Sun, LogOut } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useTheme } from '@/features/ui/hooks/useTheme';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -28,20 +14,10 @@ import FloatingChat from '@/components/FloatingChat';
 import NotificationBell from '@/components/NotificationBell';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import InstallPwaBanner from '@/components/InstallPwaBanner';
+import CommandPalette from '@/components/CommandPalette';
+import { NAV_GROUPS } from '@/components/navItems';
+import { isDesktopApp } from '@/lib/desktop';
 import { useAlertNotifications } from '@/hooks/useAlertNotifications';
-
-const NAV = [
-  { href: '/dashboard', label: 'Tổng quan', Icon: LayoutDashboard },
-  { href: '/dashboard/chat', label: 'AI Chat', Icon: MessageCircle },
-  { href: '/dashboard/vitals', label: 'Chỉ số', Icon: HeartPulse },
-  { href: '/dashboard/symptoms', label: 'Triệu chứng', Icon: FileText },
-  { href: '/dashboard/ai', label: 'Phân tích AI', Icon: Bot },
-  { href: '/dashboard/medications', label: 'Thuốc', Icon: Pill },
-  { href: '/dashboard/timeline', label: 'Nhật ký', Icon: History },
-  { href: '/dashboard/alerts', label: 'Cảnh báo', Icon: Bell },
-  { href: '/dashboard/reports', label: 'Báo cáo', Icon: FileBarChart },
-  { href: '/dashboard/profile', label: 'Hồ sơ', Icon: User },
-];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, logout } = useAuth();
@@ -53,6 +29,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useAlertNotifications();
 
   const [greeting, setGreeting] = useState('Xin chào');
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [desktopApp, setDesktopApp] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) router.replace('/login');
@@ -66,6 +44,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     const hour = new Date().getHours();
     setGreeting(hour < 12 ? 'Chào buổi sáng' : hour < 18 ? 'Chào buổi chiều' : 'Chào buổi tối');
+    setDesktopApp(isDesktopApp());
+  }, []);
+
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setPaletteOpen(true);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   if (loading || !user) {
@@ -98,22 +88,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <AppLogo size="md" href="/dashboard" />
         </div>
 
-        <nav className="flex-1 min-h-0 px-3 py-3 space-y-0.5 overflow-y-auto">
-          {NAV.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => dispatch(setSidebarOpen(false))}
-                className={`nav-item relative ${active ? 'nav-active' : ''}`}
-              >
-                {active && <span className="nav-active-indicator" />}
-                <item.Icon className={`w-[18px] h-[18px] shrink-0 ${active ? 'stroke-[2.5]' : 'stroke-2'}`} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+        <div className="px-3 pt-3">
+          <button
+            type="button"
+            onClick={() => {
+              dispatch(setSidebarOpen(false));
+              setPaletteOpen(true);
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-caption border"
+            style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg)' }}
+          >
+            <Search className="w-4 h-4" />
+            <span className="flex-1 text-left">Tìm trang</span>
+            <kbd className="kbd">Ctrl K</kbd>
+          </button>
+        </div>
+
+        <nav className="flex-1 min-h-0 px-3 py-2 overflow-y-auto">
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label}>
+              <p className="nav-label">{group.label}</p>
+              <div className="space-y-0.5">
+                {group.items.map((item) => {
+                  const active = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => dispatch(setSidebarOpen(false))}
+                      className={`nav-item relative ${active ? 'nav-active' : ''}`}
+                    >
+                      {active && <span className="nav-active-indicator" />}
+                      <item.Icon className={`w-[18px] h-[18px] shrink-0 ${active ? 'stroke-[2.5]' : 'stroke-2'}`} />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
 
         <div className="px-3 py-3 shrink-0" style={{ borderTop: '1px solid var(--border-subtle)' }}>
@@ -148,6 +161,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
+            {desktopApp && (
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border text-teal-800 dark:text-teal-200" style={{ borderColor: 'var(--border-subtle)', backgroundColor: 'var(--bg)' }}>
+                <Monitor className="w-3.5 h-3.5" />
+                App PC
+              </span>
+            )}
+            <button type="button" onClick={() => setPaletteOpen(true)} className="btn-ghost p-2 rounded-xl lg:hidden" aria-label="Tìm trang">
+              <Search className="w-5 h-5" />
+            </button>
             <NotificationBell />
             <button onClick={toggle} className="btn-ghost p-2 rounded-xl" title="Dark mode" aria-label="Đổi theme">
               {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
@@ -159,8 +181,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <main className="flex-1 page-main w-full max-w-7xl mx-auto">{children}</main>
       </div>
       <MobileBottomNav onMenuOpen={() => dispatch(setSidebarOpen(true))} />
-      <InstallPwaBanner />
+      {!desktopApp && <InstallPwaBanner />}
       <FloatingChat />
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </div>
   );
 }

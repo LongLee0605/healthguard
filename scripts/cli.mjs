@@ -149,7 +149,6 @@ async function collect() {
     backendEnv: exists(backendEnvPath),
     frontendEnv: exists(path.join(ROOT, 'frontend', '.env.local')),
     desktopEnv: exists(path.join(ROOT, 'desktop', '.env')),
-    mobileEnv: exists(path.join(ROOT, 'mobile', '.env')),
     backendModules: exists(path.join(ROOT, 'backend', 'node_modules')),
     frontendModules: exists(path.join(ROOT, 'frontend', 'node_modules')),
   };
@@ -262,7 +261,6 @@ function printDoctor(report) {
   row(report.files.backendEnv, 'backend/.env', report.files.backendEnv ? 'có' : 'THIẾU');
   row(report.files.frontendEnv, 'frontend/.env.local', report.files.frontendEnv ? 'có' : 'THIẾU');
   row(report.files.desktopEnv, 'desktop/.env', report.files.desktopEnv ? 'có' : 'chưa (tùy chọn)');
-  row(report.files.mobileEnv, 'mobile/.env', report.files.mobileEnv ? 'có' : 'chưa (tùy chọn)');
 
   section('Cấu hình AI (backend/.env — secret đã che)');
   row(Boolean(report.env.AI_PROVIDER), 'AI_PROVIDER', report.env.AI_PROVIDER || 'THIẾU');
@@ -403,14 +401,13 @@ function printHelp() {
       ['status', 'status', 'Bảng live 3 dịch vụ + JSON health'],
       ['env', 'env', 'In cấu hình .env (đã che secret)'],
       ['urls', 'urls', 'Địa chỉ web / API / Swagger'],
-      ['train:ai*', 'train:ai', 'Tạo healthguard-med + chấm triage'],
     ],
   );
   section('Dev hàng ngày');
   kv('setup lần đầu', 'npm run setup:ai');
   kv('API', 'npm run dev:backend');
   kv('Web', 'npm run dev:frontend');
-  kv('Desktop / mobile', 'npm run dev:desktop  ·  npm run dev:mobile');
+  kv('App PC', 'npm run dev:desktop');
   urls([
     ['Web', 'http://localhost:3000'],
     ['API', 'http://localhost:3001/api'],
